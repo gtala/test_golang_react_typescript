@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -15,7 +16,7 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/isalive", isAlive)
 
-	router.HandleFunc("/api/v1/user/{userId}/account/{accountId}/transactions", doTranasaction)
+	router.HandleFunc("/api/v1/user/{userId}/account/{accountId}/transactions", doTranasaction).Methods(http.MethodPost, http.MethodOptions)
 
 	spa := SpaHandler{StaticPath: "FRONTEND/build", IndexPath: "index.html"}
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +52,28 @@ func isAlive(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("ALIVE")
 }
 
+func allowCors(w http.ResponseWriter, r *http.Request) bool {
+
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Origin", "*") //http://127.0.0.1:8000
+	w.Header().Set("Access-Control-Allow-Methods", "POST,PUT,GET,DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, Access-Control-Allow-Origin, access-control-allow-methods")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE, POST, GET, PUT, OPTIONS")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return true
+	}
+
+	return false
+}
+
 func doTranasaction(w http.ResponseWriter, r *http.Request) {
+
+	if allowCors(w, r) {
+		return
+	}
+
 	fmt.Println("POST")
 
 	idUser, err := getParamFromPathUrl(r, "userId")
@@ -63,6 +85,11 @@ func doTranasaction(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(idUser)
 	fmt.Println(idAccount)
+
+	result := make(map[string]interface{})
+	result["result"] = "ok"
+
+	_ = json.NewEncoder(w).Encode(result)
 
 }
 
