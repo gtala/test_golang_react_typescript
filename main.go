@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -13,6 +14,8 @@ import (
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/isalive", isAlive)
+
+	router.HandleFunc("/api/v1/user/{userId}/account/{accountId}/transactions", doTranasaction)
 
 	spa := SpaHandler{StaticPath: "FRONTEND/build", IndexPath: "index.html"}
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -48,6 +51,21 @@ func isAlive(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("ALIVE")
 }
 
+func doTranasaction(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("POST")
+
+	idUser, err := getParamFromPathUrl(r, "userId")
+	idAccount, err := getParamFromPathUrl(r, "accountId")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(idUser)
+	fmt.Println(idAccount)
+
+}
+
 type SpaHandler struct {
 	StaticPath string
 	IndexPath  string
@@ -74,4 +92,17 @@ func (h SpaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.FileServer(http.Dir(h.StaticPath)).ServeHTTP(w, r)
+}
+
+func setHeader(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "json")
+}
+
+func getParamFromPathUrl(r *http.Request, paramId string) (string, error) {
+	params := mux.Vars(r)
+	sub := params[paramId]
+	if sub == "" {
+		return "", errors.New("Error: '" + paramId + "' param not found")
+	}
+	return sub, nil
 }
