@@ -1,0 +1,6 @@
+{
+    "go.gopath": "/home/core/go",
+    "go.goroot": "/snap/go/5759",
+    "git.ignoreLimitWarning": true,
+    "go.useLanguageServer": true
+}
