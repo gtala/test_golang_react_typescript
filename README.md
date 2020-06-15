@@ -10,7 +10,7 @@ test project
 
 cd FRONTEND 
 
-npm instal 
+npm install 
 
 npm run build 
 
