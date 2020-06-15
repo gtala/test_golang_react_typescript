@@ -8,7 +8,13 @@ export default function TransactionsService() {
     return fetch(url, GetHeadersProperties("POST", body)).then(r => (!r.ok && r.status !== 200) ? Promise.reject({ message: "An error occurred. " + r.status }) : r.json())
   }
 
+  const getAll = (userId: string, accountId: string) => {
+    const url = host + "/api/v1/user/" + userId + "/account/" + accountId + "/transactions"
+    return fetch(url, GetHeadersProperties("GET")).then(r => (!r.ok && r.status !== 200) ? Promise.reject({ message: "An error occurred. " + r.status }) : r.json())
+  }
+
     return {
-      add: add
+      add: add,
+      getAll : getAll
     }
 }

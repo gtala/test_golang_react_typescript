@@ -2,6 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import TransactionContainer from './containers/transactionsListContainer'
+import TransactionFormContainer from './containers/transactionFormContainer'
 
 //@ts-ignore
 import {BrowserRouter as Router,Switch,Route,Link} from "react-router-dom";
@@ -35,6 +36,13 @@ export default function App() {
             component={() => (
               //@ts-ignore
               <TransactionContainer />
+            )}
+          />
+          <Route
+            path="/form"
+            component={() => (
+              //@ts-ignore
+              <TransactionFormContainer />
             )}
           />
           <Route path="/">

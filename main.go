@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	"net/http"
 	"os"
 	"path/filepath"
@@ -17,6 +18,7 @@ func main() {
 	router.HandleFunc("/isalive", isAlive)
 
 	router.HandleFunc("/api/v1/user/{userId}/account/{accountId}/transactions", doTranasaction).Methods(http.MethodPost, http.MethodOptions)
+	router.HandleFunc("/api/v1/user/{userId}/account/{accountId}/transactions", getTransactions).Methods(http.MethodGet, http.MethodOptions)
 
 	spa := SpaHandler{StaticPath: "FRONTEND/build", IndexPath: "index.html"}
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -66,6 +68,62 @@ func allowCors(w http.ResponseWriter, r *http.Request) bool {
 	}
 
 	return false
+}
+
+func getTransactions(w http.ResponseWriter, r *http.Request) {
+	if allowCors(w, r) {
+		return
+	}
+
+	fmt.Println("GET")
+
+	idUser, err := getParamFromPathUrl(r, "userId")
+	idAccount, err := getParamFromPathUrl(r, "accountId")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var ex Transaction
+	fmt.Println(ex)
+
+	fmt.Println(idUser)
+	fmt.Println(idAccount)
+
+	var sourcerUser User
+	sourcerUser.ID = "1234"
+	sourcerUser.Name = "Guillermo"
+
+	var destinationUser User
+	destinationUser.ID = "1234"
+	destinationUser.Name = "Guillermo"
+
+	var sourceAccount Account
+	sourceAccount.ID = "132123"
+	sourceAccount.Owner = sourcerUser
+	sourceAccount.Alias = "HOUSE.TEA.MONTH"
+	sourceAccount.Name = "CC"
+
+	var destinationAccount Account
+	destinationAccount.ID = "132123"
+	destinationAccount.Owner = destinationUser
+	destinationAccount.Alias = "HOUSE.TEA.MONTH"
+	destinationAccount.Name = "CC"
+
+	var trans Transaction
+	trans.Amount = "100"
+	trans.Source = sourceAccount
+	trans.Destination = destinationAccount
+	trans.ID = "432432"
+	trans.DateTime = "Jun 14 10:00:00"
+
+	var transactions []Transaction
+	transactions = append(transactions, trans)
+	transactions = append(transactions, trans)
+	transactions = append(transactions, trans)
+	transactions = append(transactions, trans)
+
+	_ = json.NewEncoder(w).Encode(transactions)
 }
 
 func doTranasaction(w http.ResponseWriter, r *http.Request) {
