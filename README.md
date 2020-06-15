@@ -6,10 +6,12 @@ test project
 
  go run main.go 
 
-#front end build
+#frontend build
 
 cd FRONTEND 
+
 npm instal 
+
 npm run build 
 
 #browser
